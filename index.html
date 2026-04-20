@@ -1,33 +1,212 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
-    <title>プチコンラジオライブラリ</title>
-    <style>
-     body {
-      font-family: sans-serif;
-      font-size: 16px;
-     }
-     .dotg {
-      font-family: "DotGothic16", sans-serif;
-      font-weight: 400;
-      font-style: normal;
-     }
-      header {
-       width: 100%;
-       padding: 15px 0;
-       margin: 0 auto;
-       text-align: center;
-      }
-    </style>
-      
-  </head>
-  <body>
-    <header>
-      <h1 class="dotg">プチコンラジオライブラリ</h1>
-    </header>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+  <title>プチコンラジオライブラリ</title>
+  <style>
+    body{
+        font-family: "DotGothic16", sans-serif;
+        font-size: 16px;
+        background: #f0f0f0;
+        margin: 0;
+    }
+
+    .midasi{
+        font-size:24px;
+        font-weight:bold;
+	margin: 0;
+    }
+
+    article{
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .side{
+        background: #b0b0b0;
+        width: 15em;
+        min-height: 900px;
+        padding: 0.5em;
+        box-sizing: border-box;
+        overflow: auto;
+    }
+
+    .content{
+        background: #fff;
+        flex: 1;
+        min-height: 900px;
+        padding: 1.5em;
+        box-sizing: border-box;
+        overflow: auto;
+    }
+
+    .side,
+    .side *{
+        font-family: "DotGothic16", sans-serif;
+    }
+
+    .side a,
+    .radio-btn{
+        display: block;
+        width: 100%;
+        margin: 6px 0;
+        padding: 8px;
+        text-align: left;
+        background: transparent;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        box-sizing: border-box;
+        box-shadow: none;
+    }
+
+    .side a:hover,
+    .radio-btn:hover{
+        background: transparent;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .side .home-link{
+        background: transparent;
+        font-weight: bold;
+    }
+
+    .meta{
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    .radio-page{
+        padding: 1rem;
+    }
+
+    .radio-page h1{
+        margin-top: 0;
+    }
+
+    summary{
+        cursor: default;
+    }
+
+  </style>
+</head>
+<body>
+<article>
+  <div class="side">
+    <a href="#" id="home-link" class="home-link">ホーム</a>
+
+    <details open style="margin-top:8px;">
+      <summary>ラジオ一覧</summary>
+      <div id="radio-list"></div>
+    </details>
+  </div>
+
+  <main id="main-content" class="content" role="main">
+    <div id="landing">
+      <header id="main-header">
+        <h1 style="margin:0;">プチコンラジオライブラリ</h1>
+        <h4 class="meta">Nintendo Switchにて売られているプログラミングソフト「プチコン4」に投稿されている「ラジオもどき作品」をまとめています!</h4>
+        <hr>
+      </header>
+
+      <section>
+        <p>はやピー様が運営する<span><a href="https://sites.google.com/view/ptcm-radio">「プチコンラジオ資料館」</a></span>は、既存する「ラジオもどき」の情報を集めたサイトですが、</p>
+        <p>1～2年ほど前に更新が止まってしまいました。</p>
+        <p>更新が止まっている間に、ラジオは4つほど生まれたので、ここにまとめました。</p>
+        <p>(まだ書いていないが)</p>
+        <p>ただ詳細はあまり書いていない、OFコーナーがないのでプチコンラジオ資料館の下位互換ではあります。</p>
+        <p>(githubのリポジトリではコメントできるかも)</p>
+      </section>
+    </div>
+
+    <div id="radio-page" style="display:none;" class="radio-page" aria-hidden="true">
+      <div id="rp-inner"></div>
+    </div>
+  </main>
+</article>
+
+<script>
+  async function loadList() {
+    try {
+      const res = await fetch('./data.json');
+      if (!res.ok) throw new Error('Failed to load JSON');
+      const items = await res.json();
+      const container = document.getElementById('radio-list');
+      container.innerHTML = '';
+      items.forEach(it => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'radio-btn';
+        btn.textContent = it.title;
+        btn.addEventListener('click', () => openRadioFullPage(it));
+        container.appendChild(btn);
+      });
+    } catch (e) {
+      console.error(e);
+      document.getElementById('radio-list').textContent = '一覧を読み込めませんでした！';
+    }
+  }
+
+  function openRadioFullPage(item) {
+    const landing = document.getElementById('landing');
+    const radioPage = document.getElementById('radio-page');
+    const rpInner = document.getElementById('rp-inner');
+
+    rpInner.innerHTML = ''; // reset
+
+    const title = document.createElement('h1');
+    title.textContent = item.title || '無題';
+    rpInner.appendChild(title);
+
+    const meta = document.createElement('p');
+    meta.className = 'meta';
+    const metaParts = [];
+    if (item.author) metaParts.push('オーナー: ' + item.author);
+    if (item.year) metaParts.push('開局: ' + item.year);
+    meta.textContent = metaParts.join('　');
+    rpInner.appendChild(meta);
+
+    const desc = document.createElement('div');
+    desc.id = 'rp-description';
+    desc.innerHTML = item.description || '説明はありません。'; // ウインナーのhtml
+    rpInner.appendChild(desc);
+
+    landing.style.display = 'none';
+    radioPage.style.display = '';
+    radioPage.setAttribute('aria-hidden', 'false');
+
+    if (item.urlParam) {
+      history.pushState({ radio: item.urlParam }, '', '?radio=' + encodeURIComponent(item.urlParam));
+    } else {
+      history.pushState({ radio: item.title }, '', '?radio=' + encodeURIComponent(item.title || ''));
+    }
+  }
+
+  document.getElementById('home-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    const landing = document.getElementById('landing');
+    const radioPage = document.getElementById('radio-page');
+    radioPage.style.display = 'none';
+    radioPage.setAttribute('aria-hidden', 'true');
+    landing.style.display = '';
+    history.pushState({}, '', location.pathname);
+  });
+
+  window.addEventListener('popstate', (e) => {
+    if (!e.state || !e.state.radio) {
+      document.getElementById('radio-page').style.display = 'none';
+      document.getElementById('landing').style.display = '';
+    }
+  });
+
+  loadList();
+</script>
+</body>
 </html>
