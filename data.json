@@ -1,0 +1,26 @@
+[
+  {
+    "title": "気まぐれラジオ",
+    "url": "?radio=気まぐれラジオ",
+    "urlParam": "気まぐれラジオ",
+    "author": "はやピー",
+    "year": "2019/1/5(プチコン3号) 2019/5/26 (プチコン4)",
+    "description": "<h4 class='midasi'>概要</h4>・おそらくプチコン4初のラジオもどき。<br>・気まぐれ。<br>・Ver3では大幅に機能面が進化した。(この際KimagureRadiosに統合)<br><br><h4 class='midasi'>公開キー</h4><h4 class='midasi'>4 V 3 A K N P P F</h4>"
+  },
+  {
+    "title": "みんなで！ひかりラジオ",
+    "url": "?radio=みんなでひかりラジオ",
+    "urlParam": "みんなでひかりラジオ",
+    "author": "たきげんたろー",
+    "year": "2023/4/1",
+    "description": "あとで書く"
+  },
+  {
+    "title": "でたらめラジオ！",
+    "url": "?radio=でたらめラジオ",
+    "urlParam": "でたらめラジオ",
+    "author": "まる",
+    "year": "202x",
+    "description": "後で書く"
+  }
+]
