@@ -9,11 +9,11 @@
   },
   {
     "title": "みんなで！ひかりラジオ",
-    "url": "?radio=みんなでひかりラジオ",
+    "url": "?radio=みんなで！ひかりラジオ",
     "urlParam": "みんなでひかりラジオ",
     "author": "たきげんたろー",
     "year": "2023/4/1",
-    "description": "<h4 class='midasi'>公開キー</h4><h4 class='midasi'>4D4J333cJ</h4>"
+    "description": "<h4 class='midasi'>概要</h4>•今まで放送していた「みんなのラジオ」とデータが飛んでしまった「ひかりラジオ」を組み合わせたラジオ<br>•「コンソールを元祖に！」を合言葉に、シンプルなコンソール画面を使用している。<br>•みんなのラジオも同梱されている。<br><br><br><h4 class='midasi'>公開キー<br>4 D 4 J 3 3 3 C J</h4>"
   },
   {
     "title": "でたらめラジオ！",
@@ -22,5 +22,37 @@
     "author": "まる",
     "year": "2021/10/25",
     "description": "<h4 class='midasi'>概要</h4>·たきげんたろー氏の「スーパーラジオメーカー２」を使用した初めてのラジオ。<br>·途中から気まぐれラジオVer2のシステムが導入された。<br>·コンセプトは体験版でも見れるラジオ。<br>·このラジオがきっかけになり、2021年11月～翌年1月ごろのラジオブーム（通称第三次ラジオブーム）が起こった。<br><br><h4 class='midasi'>公開キー</h4><h4 class='midasi'>4 Z 4 5 X X 8 D</h4>"
+  },
+  {
+    "title": "ほっちゃんラジオ",
+    "url": "?radio=ほっちゃんラジオ",
+    "urlParam": "ほっちゃんラジオ",
+    "author": "ほっちゃん",
+    "year": "2022/8/27",
+    "description": "<h4 class='midasi'>概要</h4>ほっちゃんラジオは、明るい中学生(当時小学生)「ほっちゃん」のつくる、ワクワクするようなクイズや、楽しい雑談、全然できてない毎日更新などが名物な、新時代のラジオです！<br>明るい中学生(当時小学生)「ほっちゃん」の、ワクワクするクイズや雑談などが名物の新時代のラジオである。<br>現在は<a href='https://hottyanworkshop.ltt.jp/index.html'>ウェブサイト</a>に専念しているためラジオの更新をしていない。<br>(ウェブサイトはリンク切れ どこかに移転しているかもしれない)<br><br><h4 class='midasi'>公開キー<br>4 K 3 8 4 K W 8 E</h4>"
+  },
+  {
+    "title": "たつきんラジオ",
+    "url": "?radio=たつきんラジオ",
+    "urlParam": "たつきんラジオ",
+    "author": "たつきん1192",
+    "year": "2022/4/15",
+    "description": "<h4 class='midasi'>概要</h4>•いろいろ伝えるラジオである。<br>•32ドットフォントが使用されている。<br>•第何回まで見たか分かる、セーブ機能がある。<br><br><br><h4 class='midasi'>公開キー<br>4 Q A A D X X H D</h4>"
+  },
+  {
+    "title": "おつまみラジオ",
+    "url": "?radio=おつまみラジオ",
+    "urlParam": "おつまみラジオ",
+    "author": "おつまみさいこう",
+    "year": "2024/4/3",
+    "description": "<h4 class='midasi'>概要</h4>•使用エンジンはスーパーラジオメーカー2'である。<br>•たけのこ派である。<br>•1ヶ月に2回更新を目標にしているが、1年以上失踪していた。<br>•最近ひょっこりプチバースに出てきている。<br><br><h4 class='midasi'>公開キー<br>4 K X K N 3 E M</h4>"
+  },
+  {
+    "title": "DasimakiRADIO",
+    "url": "?radio=DasimakiRADIO",
+    "urlParam": "DasimakiRADIO",
+    "author": "だしまきたまご",
+    "year": "2026/2/11",
+    "description": "<h4 class='midasi'>概要</h4>•不定期更新のラジオ。<br>•お便りはプチバースで集めている。<br><a href='http://petitverse.hosiken.jp/community/petitcom/topic/?read=1945'>お便り募集フォームのリンク</a><br><br><h4 class='midasi'>公開キー<br>4 A B W X 2 K 3 E</h4>"
   }
 ]
