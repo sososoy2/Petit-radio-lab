@@ -17,7 +17,7 @@
     .midasi{
         font-size:24px;
         font-weight:bold;
-	margin: 0;
+	    margin: 0;
     }
 
     article{
@@ -100,6 +100,7 @@
 <body>
 <article>
   <div class="side">
+    <h3 style="font-size:1.5em;">プチコンラジオ<br>ライブラリ</h3>
     <a href="#" id="home-link" class="home-link">ホーム</a>
 
     <details open style="margin-top:8px;">
@@ -121,7 +122,7 @@
         <p>1～2年ほど前にラジオ一覧の更新が止まってしまいました。(管理はしてるっぽい)</p>
         <p>更新が止まっている間にラジオは結構誕生してたのでまとめます。</p>
         <p>ただ詳細はあまり書いていません。</p>
-		<p>内容はほぼすべて<span><a href="https://sites.google.com/view/ptcm-radio">プチコンラジオ資料館</a></span>を参考にしています。</p>
+	    <p>内容はほぼすべて<span><a href="https://sites.google.com/view/ptcm-radio">プチコンラジオ資料館</a></span>を参考にしています。</p>
       </section>
     </div>
 
@@ -133,80 +134,129 @@
 </article>
 
 <script>
-  async function loadList() {
-    try {
-      const res = await fetch('./data.json');
-      if (!res.ok) throw new Error('Failed to load JSON');
-      const items = await res.json();
-      const container = document.getElementById('radio-list');
-      container.innerHTML = '';
-      items.forEach(it => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'radio-btn';
-        btn.textContent = it.title;
-        btn.addEventListener('click', () => openRadioFullPage(it));
-        container.appendChild(btn);
-      });
-    } catch (e) {
-      console.error(e);
-      document.getElementById('radio-list').textContent = '一覧を読み込めませんでした！';
-    }
+let RADIO_DATA = [];
+
+// utils
+const el = id => document.getElementById(id);
+const parseQueryParam = name => new URLSearchParams(location.search).get(name);
+const decodeIf = v => v ? decodeURIComponent(v) : v;
+
+function createRadioButton(item) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'radio-btn';
+  btn.textContent = item.title || '(無題)';
+  btn.addEventListener('click', () => openRadioFullPage(item, true));
+  return btn;
+}
+
+function populateList(items) {
+  const container = el('radio-list');
+  container.innerHTML = '';
+  if (!items.length) {
+    container.textContent = '項目がありません。';
+    return;
   }
+  items.forEach(it => container.appendChild(createRadioButton(it)));
+}
 
-  function openRadioFullPage(item) {
-    const landing = document.getElementById('landing');
-    const radioPage = document.getElementById('radio-page');
-    const rpInner = document.getElementById('rp-inner');
+function renderRadio(item) {
+  const rpInner = el('rp-inner');
+  rpInner.innerHTML = '';
 
-    rpInner.innerHTML = ''; // reset
+  const title = document.createElement('h1');
+  title.textContent = item.title || '無題';
+  rpInner.appendChild(title);
 
-    const title = document.createElement('h1');
-    title.textContent = item.title || '無題';
-    rpInner.appendChild(title);
+  const meta = document.createElement('p');
+  meta.className = 'meta';
+  const metaParts = [];
+  if (item.author) metaParts.push('オーナー: ' + item.author);
+  if (item.year) metaParts.push('開局: ' + item.year);
+  meta.textContent = metaParts.join('　');
+  rpInner.appendChild(meta);
 
-    const meta = document.createElement('p');
-    meta.className = 'meta';
-    const metaParts = [];
-    if (item.author) metaParts.push('オーナー: ' + item.author);
-    if (item.year) metaParts.push('開局: ' + item.year);
-    meta.textContent = metaParts.join('　');
-    rpInner.appendChild(meta);
+  const desc = document.createElement('div');
+  desc.id = 'rp-description';
+  desc.innerHTML = item.description || '説明はありません。';
+  rpInner.appendChild(desc);
+}
 
-    const desc = document.createElement('div');
-    desc.id = 'rp-description';
-    desc.innerHTML = item.description || '説明はありません。'; // ウインナーのhtml
-    rpInner.appendChild(desc);
+function openRadioFullPage(item, pushHistory = false) {
+  renderRadio(item);
+  el('landing').style.display = 'none';
+  el('radio-page').style.display = '';
+  el('radio-page').setAttribute('aria-hidden', 'false');
 
-    landing.style.display = 'none';
-    radioPage.style.display = '';
-    radioPage.setAttribute('aria-hidden', 'false');
+  const param = item.urlParam || item.title || '';
+  const newUrl = param ? ('?radio=' + encodeURIComponent(param)) : location.pathname;
+  if (pushHistory) {
+    history.pushState({ radio: param }, '', newUrl);
+  } else {
+    history.replaceState({ radio: param }, '', newUrl);
+  }
+}
 
-    if (item.urlParam) {
-      history.pushState({ radio: item.urlParam }, '', '?radio=' + encodeURIComponent(item.urlParam));
+function showLanding(replaceHistory = false) {
+  el('radio-page').style.display = 'none';
+  el('radio-page').setAttribute('aria-hidden', 'true');
+  el('landing').style.display = '';
+  if (replaceHistory) history.replaceState({}, '', location.pathname);
+  else history.pushState({}, '', location.pathname);
+}
+
+function findRadioByParam(param) {
+  if (!param) return null;
+  const decoded = decodeURIComponent(param);
+  let found = RADIO_DATA.find(r => (r.urlParam === decoded) || (r.title === decoded));
+  if (found) return found;
+  const norm = s => (s||'').toString().replace(/\s+/g,'').replace(/[？?！!。\.，,]/g,'').toLowerCase();
+  const t = norm(decoded);
+  return RADIO_DATA.find(r => norm(r.title) === t || (r.urlParam && norm(r.urlParam) === t)) || null;
+}
+
+function handlePopState(e) {
+  const state = e.state || {};
+  if (state.radio) {
+    const item = findRadioByParam(state.radio);
+    if (item) { openRadioFullPage(item, false); return; }
+  }
+  // show landing if no radio state or not found
+  el('radio-page').style.display = 'none';
+  el('landing').style.display = '';
+}
+
+//json
+async function loadDataJson() {
+  try {
+    const res = await fetch('./data.json', {cache: "no-store"});
+    if (!res.ok) throw new Error('Failed to fetch data.json');
+    const items = await res.json();
+    RADIO_DATA = Array.isArray(items) ? items : [];
+    populateList(RADIO_DATA);
+
+    // くえりぱらめーたー
+    const q = parseQueryParam('radio');
+    if (q) {
+      const item = findRadioByParam(q);
+      if (item) openRadioFullPage(item, false);
     } else {
-      history.pushState({ radio: item.title }, '', '?radio=' + encodeURIComponent(item.title || ''));
+      history.replaceState({}, '', location.pathname);
     }
+  } catch (err) {
+    console.error(err);
+    el('radio-list').textContent = '一覧を読み込めませんでした';
   }
+}
 
+(function init() {
   document.getElementById('home-link').addEventListener('click', (e) => {
     e.preventDefault();
-    const landing = document.getElementById('landing');
-    const radioPage = document.getElementById('radio-page');
-    radioPage.style.display = 'none';
-    radioPage.setAttribute('aria-hidden', 'true');
-    landing.style.display = '';
-    history.pushState({}, '', location.pathname);
+    showLanding(true);
   });
-
-  window.addEventListener('popstate', (e) => {
-    if (!e.state || !e.state.radio) {
-      document.getElementById('radio-page').style.display = 'none';
-      document.getElementById('landing').style.display = '';
-    }
-  });
-
-  loadList();
+  window.addEventListener('popstate', handlePopState);
+  loadDataJson();
+})();
 </script>
 </body>
 </html>
