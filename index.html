@@ -2,141 +2,214 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <title>プチコンラジオライブラリ</title>
   <style>
-    body{
-        font-family: "DotGothic16", sans-serif;
-        font-size: 16px;
-        background: #f0f0f0;
-        margin: 0;
+    :root{
+      --gap: 10px;
+      --side-min: 220px;
+      --side-max: 360px;
+      --content-min: 280px;
+      --max-layout-width: 1200px;
+      --page-padding: 12px;
     }
 
-    .midasi{
-        font-size:24px;
-        font-weight:bold;
-	    margin: 0;
+    html,body{
+      height: 100%;
+      margin: 0;
+    }
+
+    body{
+      font-family: "DotGothic16", sans-serif;
+      font-size: 16px;
+      background: #f0f0f0;
+      box-sizing: border-box;
+      padding: 0;
     }
 
     article{
-        display: flex;
-        gap: 10px;
-        padding: 10px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--gap);
+      padding: var(--page-padding);
+      justify-content: center;
+    }
+
+    .layout{
+      width: 100%;
+      max-width: var(--max-layout-width);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--gap);
+      align-items: start;
     }
 
     .side{
-        background: #b0b0b0;
-        width: 300px;
-        min-height: 56.2em;
-        padding: 0.5em;
-        box-sizing: border-box;
-        overflow: auto;
+      background: #b0b0b0;
+      padding: 0.6em;
+      box-sizing: border-box;
+      overflow: auto;
+      min-width: clamp(var(--side-min), 25vw, var(--side-max));
+      max-width: clamp(var(--side-min), 32vw, var(--side-max));
     }
 
     .content{
-        background: #fff;
-        flex: 1;
-        min-height: 900px;
-        padding: 1.5em;
-        box-sizing: border-box;
-        overflow: auto;
+      background: #fff;
+      padding: 1.2em;
+      box-sizing: border-box;
+      overflow: auto;
+      min-width: var(--content-min);
     }
 
     .side,
     .side *{
-        font-family: "DotGothic16", sans-serif;
+      font-family: "DotGothic16", sans-serif;
     }
 
     .side a,
     .radio-btn{
-        display: block;
-        width: 100%;
-        margin: 6px 0;
-        padding: 8px;
-        text-align: left;
-        background: transparent;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        text-decoration: none;
-        color: inherit;
-        box-sizing: border-box;
-        box-shadow: none;
-    }
-
-    .side a:hover,
-    .radio-btn:hover{
-        background: transparent;
-        color: inherit;
-        text-decoration: none;
+      display: block;
+      width: 100%;
+      margin: 6px 0;
+      padding: 8px;
+      text-align: left;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      box-sizing: border-box;
     }
 
     .side .home-link{
-        background: transparent;
-        font-weight: bold;
+      font-weight: bold;
     }
 
     .meta{
-        color: #666;
-        margin-bottom: 1rem;
+      color: #666;
+      margin-bottom: 1rem;
     }
 
     .radio-page{
-        padding: 1rem;
+      padding: 1rem 0;
     }
 
     .radio-page h1{
-        margin-top: 0;
+      margin-top: 0;
     }
 
     summary{
-        cursor: default;
+      cursor: default;
+    }
+
+    #sidebar-toggle{
+      display: none;
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    @media (max-width: 900px){
+      .layout{
+        grid-template-columns: clamp(180px, 28vw, 320px) 1fr;
+      }
+    }
+
+    @media (max-width: 800px){
+      article{ padding: 8px; }
+      .layout{
+        grid-template-columns: 1fr;
+      }
+      .side{
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 56px;
+        margin: 0 var(--page-padding);
+        display: none;
+        z-index: 120;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+      }
+      .side.open{ display: block; }
+      .content{
+        margin-top: 0;
+        padding: 1rem;
+      }
+      #sidebar-toggle{ display: inline-block; margin-left: 8px; vertical-align: middle; }
+      #main-header h1{ font-size: 1.25rem; margin:0; display:inline-block; vertical-align: middle; }
+    }
+
+    body, html { max-width: 100%; overflow-x: hidden; }
+
+    @media (min-width: 1200px){
+      :root{
+        --side-min: 260px;
+        --side-max: 380px;
+        --content-min: 540px;
+      }
+    }
+
+    @media (max-width: 420px){
+      :root{
+        --page-padding: 8px;
+      }
+      .side a, .radio-btn{ font-size: 15px; padding: 8px; }
+    }
+
+    .container-center{
+      width: 100%;
+      max-width: var(--max-layout-width);
+      margin: 0 auto;
     }
 
   </style>
 </head>
 <body>
 <article>
-  <div class="side">
-    <h3 style="font-size:1.5em;">プチコンラジオ<br>ライブラリ</h3>
-    <a href="#" id="home-link" class="home-link">ホーム</a>
+  <div class="container-center layout" role="application">
+    <div class="side" id="side">
+      <h3 style="font-size:1.4em;margin:0 0 .6em 0;">プチコンラジオ<br>ライブラリ</h3>
+      <a href="#" id="home-link" class="home-link">ホーム</a>
 
-    <details open style="margin-top:8px;">
-      <summary>ラジオ一覧</summary>
-      <div id="radio-list" style="font-size:24px;"></div>
-    </details>
+      <details open style="margin-top:8px;">
+        <summary>ラジオ一覧</summary>
+        <div id="radio-list" style="font-size:20px;"></div>
+      </details>
+    </div>
+
+    <main id="main-content" class="content" role="main">
+      <div id="landing">
+        <header id="main-header" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <h1 style="margin:0;">プチコンラジオライブラリ</h1>
+          <button id="sidebar-toggle" aria-controls="radio-list" aria-expanded="false">メニュー</button>
+          <h4 class="meta" style="width:100%;">Nintendo Switchにて売られているプログラミングソフト「プチコン4」に投稿されている「ラジオもどき作品」をまとめています!</h4>
+          <hr style="width:100%;margin-top:0;">
+        </header>
+
+        <section>
+          <p>はやピー様が運営する<span><a href="https://sites.google.com/view/ptcm-radio">「プチコンラジオ資料館」</a></span>は、既存する「ラジオもどき」の情報を集めたサイトですが、</p>
+          <p>1～2年ほど前にラジオ一覧の更新が止まってしまいました。("プチコンラジオの歴史"という項目は更新されてる)</p>
+          <p>ただ詳細を書くようにしたい</p>
+  	      <p>内容はほぼすべて<span><a href="https://sites.google.com/view/ptcm-radio">プチコンラジオ資料館</a></span>を参考にしています。</p>
+        </section>
+      </div>
+
+      <div id="radio-page" style="display:none;" class="radio-page" aria-hidden="true">
+        <div id="rp-inner"></div>
+      </div>
+    </main>
   </div>
-
-  <main id="main-content" class="content" role="main">
-    <div id="landing">
-      <header id="main-header">
-        <h1 style="margin:0;">プチコンラジオライブラリ</h1>
-        <h4 class="meta">Nintendo Switchにて売られているプログラミングソフト「プチコン4」に投稿されている「ラジオもどき作品」をまとめています!</h4>
-        <hr>
-      </header>
-
-      <section>
-        <p>はやピー様が運営する<span><a href="https://sites.google.com/view/ptcm-radio">「プチコンラジオ資料館」</a></span>は、既存する「ラジオもどき」の情報を集めたサイトですが、</p>
-        <p>1～2年ほど前にラジオ一覧の更新が止まってしまいました。(管理はしてるっぽい)</p>
-        <p>更新が止まっている間にラジオは結構誕生してたのでまとめます。</p>
-        <p>ただ詳細はあまり書いていません。</p>
-	    <p>内容はほぼすべて<span><a href="https://sites.google.com/view/ptcm-radio">プチコンラジオ資料館</a></span>を参考にしています。</p>
-      </section>
-    </div>
-
-    <div id="radio-page" style="display:none;" class="radio-page" aria-hidden="true">
-      <div id="rp-inner"></div>
-    </div>
-  </main>
-	
 </article>
 
 <script>
 let RADIO_DATA = [];
 
-// utils
 const el = id => document.getElementById(id);
 const parseQueryParam = name => new URLSearchParams(location.search).get(name);
 const decodeIf = v => v ? decodeURIComponent(v) : v;
@@ -221,12 +294,10 @@ function handlePopState(e) {
     const item = findRadioByParam(state.radio);
     if (item) { openRadioFullPage(item, false); return; }
   }
-  // show landing if no radio state or not found
   el('radio-page').style.display = 'none';
   el('landing').style.display = '';
 }
 
-//json
 async function loadDataJson() {
   try {
     const res = await fetch('./data.json', {cache: "no-store"});
@@ -235,7 +306,6 @@ async function loadDataJson() {
     RADIO_DATA = Array.isArray(items) ? items : [];
     populateList(RADIO_DATA);
 
-    // くえりぱらめーたー
     const q = parseQueryParam('radio');
     if (q) {
       const item = findRadioByParam(q);
@@ -256,6 +326,42 @@ async function loadDataJson() {
   });
   window.addEventListener('popstate', handlePopState);
   loadDataJson();
+
+  const toggleBtn = document.getElementById('sidebar-toggle');
+  const sideEl = document.getElementById('side');
+  if (toggleBtn){
+    toggleBtn.addEventListener('click', () => {
+      const open = sideEl.classList.toggle('open');
+      toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) document.body.style.overflow = 'hidden';
+      else document.body.style.overflow = '';
+    });
+
+    const closeSideOnSelect = () => {
+      if (window.matchMedia('(max-width:800px)').matches){
+        sideEl.classList.remove('open');
+        toggleBtn.setAttribute('aria-expanded','false');
+        document.body.style.overflow = '';
+      }
+    };
+
+    sideEl.addEventListener('click', (e) => {
+      if (e.target.classList.contains('radio-btn') || e.target.classList.contains('home-link')) {
+        closeSideOnSelect();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.matchMedia('(min-width:801px)').matches){
+        sideEl.classList.remove('open');
+        document.body.style.overflow = '';
+        toggleBtn.setAttribute('aria-expanded','false');
+        sideEl.style.display = 'block';
+      } else {
+        sideEl.style.display = '';
+      }
+    });
+  }
 })();
 </script>
 </body>
