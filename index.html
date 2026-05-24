@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://sososoy2.github.io/Petit-radio-lab">
+  <title>プチコンラジオライブラリ</title>
+  <style>
+    :root{
+      --gap: 10px;
+      --side-min: 220px;
+      --side-max: 360px;
+      --content-min: 280px;
+      --max-layout-width: 1200px;
+      --page-padding: 12px;
+    }
+
+    html,body{
+      height: 100%;
+      margin: 0;
+    }
+
+    body{
+      font-family: "DotGothic16", sans-serif;
+      font-size: 16px;
+      background: #f0f0f0;
+      box-sizing: border-box;
+      padding: 0;
+    }
+    
+    .midasi{
+        font-size:24px;
+        font-weight:bold;
+	      margin: 0;
+    }
+    
+    article{
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--gap);
+      padding: var(--page-padding);
+      justify-content: center;
+    }
+
+    .layout{
+      width: 100%;
+      max-width: var(--max-layout-width);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--gap);
+      align-items: start;
+    }
+
+    .side{
+      background: #b0b0b0;
+      padding: 0.6em;
+      box-sizing: border-box;
+      overflow: auto;
+      min-width: clamp(var(--side-min), 25vw, var(--side-max));
+      max-width: clamp(var(--side-min), 32vw, var(--side-max));
+    }
+
+    .content{
+      background: #fff;
+      padding: 1.2em;
+      box-sizing: border-box;
+      overflow: auto;
+      min-width: var(--content-min);
+    }
+
+    .side,
+    .side *{
+      font-family: "DotGothic16", sans-serif;
+    }
+
+    .side a,
+    .radio-btn{
+      display: block;
+      width: 100%;
+      margin: 6px 0;
+      padding: 8px;
+      text-align: left;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      box-sizing: border-box;
+    }
+
+    .side .home-link{
+      font-weight: bold;
+    }
+
+    .meta{
+      color: #666;
+      margin-bottom: 1rem;
+    }
+
+    .radio-page{
+      padding: 1rem 0;
+    }
+
+    .radio-page h1{
+      margin-top: 0;
+    }
+
+    summary{
+      cursor: default;
+    }
+
+    #sidebar-toggle{
+      display: none;
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    @media (max-width: 900px){
+      .layout{
+        grid-template-columns: clamp(180px, 28vw, 320px) 1fr;
+      }
+    }
+
+    @media (max-width: 800px){
+      article{ padding: 8px; }
+      .layout{
+        grid-template-columns: 1fr;
+      }
+      .side{
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 56px;
+        bottom: 0;
+        margin: 0 var(--page-padding);
+        display: none;
+        z-index: 120;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+        overflow-y: auto;
+        overflow-x: hidden;
+        max-height: calc(100vh - 56px);
+      }
+      .side.open{ display: block; }
+      .content{
+        margin-top: 0;
+        padding: 1rem;
+      }
+      #sidebar-toggle{ display: inline-block; margin-left: 8px; vertical-align: middle; }
+      #main-header h1{ font-size: 1.25rem; margin:0; display:inline-block; vertical-align: middle; }
+    }
+
+    body, html { max-width: 100%; overflow-x: hidden; }
+
+    @media (min-width: 1200px){
+      :root{
+        --side-min: 260px;
+        --side-max: 380px;
+        --content-min: 540px;
+      }
+    }
+
+    @media (max-width: 420px){
+      :root{
+        --page-padding: 8px;
+      }
+      .side a, .radio-btn{ font-size: 15px; padding: 8px; }
+    }
+
+    .container-center{
+      width: 100%;
+      max-width: var(--max-layout-width);
+      margin: 0 auto;
+    }
+	  
+    #sidebar-toggle{
+        margin-bottom:10px;
+    }
+  </style>
+</head>
+<body>
+<article>
+  <div class="container-center layout" role="application">
+    <div class="side" id="side">
+      <h3 style="font-size:1.4em;margin:0 0 .6em 0;">プチコンラジオ<br>ライブラリ</h3>
+      <a href="#" id="home-link" class="home-link">ホーム</a>
+      <a href="#" id="create-radio-link">ラジオを作ろう</a>
+
+      <details open style="margin-top:8px;">
+        <summary>ラジオ一覧</summary>
+        <div id="radio-list" style="font-size:20px;"></div>
+      </details>
+    </div>
+
+    <main id="main-content" class="content" role="main">
+	 <button id="sidebar-toggle" aria-controls="radio-list" aria-expanded="false">メニュー</button>
+      <div id="landing">
+        <header id="main-header" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <h1 style="margin:0;">プチコンラジオライブラリ</h1>
+         
+          <h4 class="meta" style="width:100%;">Nintendo Switchにて売られているプログラミングソフト「プチコン4」に投稿されている「ラジオもどき作品」をまとめているサイトです。</h4>
+          <hr style="width:100%;margin-top:0;">
+        </header>
+
+        <section>
+          <p>はやピー様が運営する<span><a href="https://sites.google.com/view/ptcm-radio">「プチコンラジオ資料館」</a></span>を参考に、独自の内容で記事を書いています。</p>
+          <p>新しいラジオの情報を中心にまとめます！</p>
+  	      <p>内容は間違っている可能性があります。</p>
+		  <p><span><a href="https://sites.google.com/view/ptcm-radio">プチコンラジオ資料館</a></span></p>
+		  <h4>コメント（交流所）</h4>
+		  <p>コメントはGithubアカウント必須です。</p>
+		  <!--<script src="https://utteranc.es/client.js"
+               repo="sososoy2/petit-radio-lab"
+               issue-term="pathname"
+               theme="github-light"
+               crossorigin="anonymous"
+               async>
+          </script>-->
+<script src="https://giscus.app/client.js"
+        data-repo="sososoy2/Petit-radio-lab"
+        data-repo-id="R_kgDOSGfrXQ"
+        data-category="General"
+        data-category-id="DIC_kwDOSGfrXc4C9bRn"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="0"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="light"
+        data-lang="ja"
+        crossorigin="anonymous"
+        async>
+</script>
+        </section>
+      </div>
+
+      <div id="create-radio-page" style="display:none;" class="radio-page" aria-hidden="true">
+		<p>※ある程度のプチコンの知識を前提としています。<br>もしプチコンが初めての方でも、プチコンの初心者ガイドを一通り見れば大丈夫だと思います</p>
+        <h1>ラジオを作ろう！</h1>
+		<p>プチコンラジオ界隈は最近盛り上がりを見せています。</p>
+		<p>あなたも流行りに乗りませんか？いや乗りましょう！！</p>
+		<h2>作る前に</h2>
+        <p>先に考えとくと手っ取り早い物</p>
+     	<ul>
+		  <li>ラジオの名前</li>
+          <li>どのような人物を登場させるか</li>
+		</ul>
+	    <p>理解しておくべき事</p>
+     	<ul>
+		  <li>プチコン4の利用規約に従う<br>つまり人を傷付けない、個人情報を出さないということ。<br>必ず利用規約を読んでからやりましょう。5行ほどなのですぐ読み終わります。</li>
+          <li>このサイトの解説とプチコン4の利用規約との矛盾があった場合、プチコン4の利用規約を優先すること。</li>
+		</ul>
+		  
+	    <h2>ラジオエンジンをダウンロード</h2>
+		<p>まずラジオエンジンとは、ラジオを作る、再生するためのプログラムです。</p>
+		<p>自分でプログラムを組む方法もありますが、エンジンの方が手っ取り早いです。</p>
+    <p>※自分で作った方が楽しいという意見もある。</p>
+		<h4>メジャーなラジオエンジン</h4>
+		<h4>KimaRasSystem</h4>
+		<p>今年（2026年）のラジオで最も使われてると言っても過言では無い。</p>
+		<p>はやピー氏の「気まぐれラジオず」を本人がラジオエンジン用に最適化した物。</p>
+		<h2>公開キー</h2>
+		<p class="midasi">4RK9V83C4</p>
+    <hr>
+		<h4>スーパーラジオメーカー2</h4>
+		<p>2021年にてたきげんたろー氏にて公開されたエンジン。</p>
+		<p>シンプル、初心者向けのガイドが付いているので入門には最適。</p>
+    <p>ただ漢字が読めないのが欠点。</p>
+		<h2>公開キー</h2>
+		<p class="midasi">44435P4HD</p>
+    <hr>
+    <h4>スーパーラジオメーカー2'</h4>
+		<p>「スーパーラジオメーカー2」をほっちゃん氏が改造。</p>
+		<p>お気に入りやシーズン、人物ごとに字幕の色を変えるなどの独自機能がある。</p>
+    <p>これも初心者向けのガイドが付いている。</p>
+		<h2>公開キー</h2>
+		<p class="midasi">45K9QV3JJ</p>
+    <hr>
+    <h2>さっそく作ろう</h2>
+    <p>KimaRasSystem Ver3.0.0（きまらずエンジン）の場合</p>
+	<p>まずはオリジナリティを出そう。</p>
+    <p>MAIN.PRGの268行目で背景の画像を変えよう。</p>
+	<p>FILELIST$[70]の数字の部分を変えると背景が変わる。</p>
+	<p>0から78までの数字じゃないとエラーを吐くので気をつけよう</p>
+	<p class="midasi">次は471行目付近の文字を書き換えよう。</p>
+	<p>初期状態のタイトル画面は「Kimaras System」となっているが、そこを自分のラジオの名前にしよう。</p>
+    <p>503,504行目もさっき書いた内容と同じに書き換えよう。</p>
+	<p></p>
+	<p>この記事は書き途中です。</p>
+	  </div>
+
+      <div id="radio-page" style="display:none;" class="radio-page" aria-hidden="true">
+        <div id="rp-inner"></div>
+      </div>
+    </main>
+  </div>
+</article>
+
+<script>
+let RADIO_DATA = [];
+
+const el = id => document.getElementById(id);
+const parseQueryParam = name => new URLSearchParams(location.search).get(name);
+const decodeIf = v => v ? decodeURIComponent(v) : v;
+
+function createRadioButton(item) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'radio-btn';
+  btn.textContent = item.title || '(無題)';
+  btn.addEventListener('click', () => openRadioFullPage(item, true));
+  return btn;
+}
+
+function populateList(items) {
+  const container = el('radio-list');
+  container.innerHTML = '';
+  if (!items.length) {
+    container.textContent = '項目がありません。';
+    return;
+  }
+  items.forEach(it => container.appendChild(createRadioButton(it)));
+}
+
+function renderRadio(item) {
+  const rpInner = el('rp-inner');
+  rpInner.innerHTML = '';
+
+  const title = document.createElement('h1');
+  title.textContent = item.title || '無題';
+  rpInner.appendChild(title);
+
+  const meta = document.createElement('p');
+  meta.className = 'meta';
+  const metaParts = [];
+  if (item.author) metaParts.push('オーナー: ' + item.author);
+  if (item.year) metaParts.push('開局: ' + item.year);
+  meta.textContent = metaParts.join('　');
+  rpInner.appendChild(meta);
+
+  const desc = document.createElement('div');
+  desc.id = 'rp-description';
+  desc.innerHTML = item.description || '説明はありません。';
+  rpInner.appendChild(desc);
+}
+
+function openRadioFullPage(item, pushHistory = false) {
+  renderRadio(item);
+  el('landing').style.display = 'none';
+  el('create-radio-page').style.display = 'none';
+  el('radio-page').style.display = '';
+  el('radio-page').setAttribute('aria-hidden', 'false');
+
+  const param = item.urlParam || item.title || '';
+  const newUrl = param ? ('?radio=' + encodeURIComponent(param)) : location.pathname;
+  if (pushHistory) {
+    history.pushState({ radio: param }, '', newUrl);
+  } else {
+    history.replaceState({ radio: param }, '', newUrl);
+  }
+}
+
+function showLanding(replaceHistory = false) {
+  el('radio-page').style.display = 'none';
+  el('radio-page').setAttribute('aria-hidden', 'true');
+  el('create-radio-page').style.display = 'none';
+  el('create-radio-page').setAttribute('aria-hidden', 'true');
+  el('landing').style.display = '';
+  if (replaceHistory) history.replaceState({}, '', location.pathname);
+  else history.pushState({}, '', location.pathname);
+}
+
+function showCreateRadioPage(replaceHistory = false) {
+  el('landing').style.display = 'none';
+  el('radio-page').style.display = 'none';
+  el('radio-page').setAttribute('aria-hidden', 'true');
+  el('create-radio-page').style.display = '';
+  el('create-radio-page').setAttribute('aria-hidden', 'false');
+  if (replaceHistory) history.replaceState({}, '', location.pathname);
+  else history.pushState({}, '', location.pathname);
+}
+
+function findRadioByParam(param) {
+  if (!param) return null;
+  const decoded = decodeURIComponent(param);
+  let found = RADIO_DATA.find(r => (r.urlParam === decoded) || (r.title === decoded));
+  if (found) return found;
+  const norm = s => (s||'').toString().replace(/\s+/g,'').replace(/[？?！!。\.，,]/g,'').toLowerCase();
+  const t = norm(decoded);
+  return RADIO_DATA.find(r => norm(r.title) === t || (r.urlParam && norm(r.urlParam) === t)) || null;
+}
+
+function handlePopState(e) {
+  const state = e.state || {};
+  if (state.radio) {
+    const item = findRadioByParam(state.radio);
+    if (item) { openRadioFullPage(item, false); return; }
+  }
+  el('radio-page').style.display = 'none';
+  el('create-radio-page').style.display = 'none';
+  el('landing').style.display = '';
+}
+
+async function loadDataJson() {
+  try {
+    const res = await fetch('./data.json', {cache: "no-store"});
+    if (!res.ok) throw new Error('Failed to fetch data.json');
+    const items = await res.json();
+    RADIO_DATA = Array.isArray(items) ? items : [];
+    populateList(RADIO_DATA);
+
+    const q = parseQueryParam('radio');
+    if (q) {
+      const item = findRadioByParam(q);
+      if (item) openRadioFullPage(item, false);
+    } else {
+      history.replaceState({}, '', location.pathname);
+    }
+  } catch (err) {
+    console.error(err);
+    el('radio-list').textContent = '一覧を読み込めませんでした';
+  }
+}
+
+(function init() {
+  document.getElementById('home-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    showLanding(true);
+  });
+
+  document.getElementById('create-radio-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    showCreateRadioPage(true);
+  });
+
+  window.addEventListener('popstate', handlePopState);
+  loadDataJson();
+
+  const toggleBtn = document.getElementById('sidebar-toggle');
+  const sideEl = document.getElementById('side');
+  if (toggleBtn){
+    toggleBtn.addEventListener('click', () => {
+      const open = sideEl.classList.toggle('open');
+      toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) document.body.style.overflow = 'hidden';
+      else document.body.style.overflow = '';
+    });
+
+    const closeSideOnSelect = () => {
+      if (window.matchMedia('(max-width:800px)').matches){
+        sideEl.classList.remove('open');
+        toggleBtn.setAttribute('aria-expanded','false');
+        document.body.style.overflow = '';
+      }
+    };
+
+    sideEl.addEventListener('click', (e) => {
+      if (e.target.classList.contains('radio-btn') || e.target.classList.contains('home-link') || e.target.id === 'create-radio-link') {
+        closeSideOnSelect();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.matchMedia('(min-width:801px)').matches){
+        sideEl.classList.remove('open');
+        document.body.style.overflow = '';
+        toggleBtn.setAttribute('aria-expanded','false');
+        sideEl.style.display = 'block';
+      } else {
+        sideEl.style.display = '';
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
